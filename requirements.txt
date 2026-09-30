@@ -1,0 +1,4 @@
+pygame>=2.5,<3
+vgamepad>=0.1.0
+psutil>=5.9
+pyinstaller>=6.0

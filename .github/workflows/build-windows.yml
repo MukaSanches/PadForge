@@ -1,0 +1,61 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      VGAMEPAD_SKIP_VIGEMBUS_INSTALL: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies without interactive driver prompt
+        run: pip install -r requirements.txt
+
+      - name: Stage ViGEmBus installer bundled by vgamepad
+        shell: pwsh
+        run: |
+          $msi = python -c "import importlib.metadata as m; print(m.distribution('vgamepad').locate_file('vgamepad/win/vigem/install/x64/ViGEmBusSetup_x64.msi'))"
+          Copy-Item $msi "assets/ViGEmBusSetup_x64.msi"
+
+      - name: Download current SDL controller database
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt" -OutFile "assets/gamecontrollerdb.txt"
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/LICENSE" -OutFile "assets/SDL_GameControllerDB-LICENSE.txt"
+
+      - name: Verify core
+        run: python scripts/verify.py
+
+      - name: Build executable
+        run: pyinstaller --noconfirm --clean --windowed --name PadForge --add-data "profiles;profiles" --add-data "assets;assets" run_padforge.py
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build installer
+        run: iscc installer/PadForge.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PadForge-Windows
+          path: |
+            dist/PadForge/**
+            dist-installer/*.exe
+
+      - name: Release tagged build
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-installer/*.exe

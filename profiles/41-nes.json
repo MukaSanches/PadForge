@@ -1,0 +1,13 @@
+{
+  "name": "Retro / NES",
+  "category": "Retro",
+  "executables": ["mesen.exe", "nestopia.exe"],
+  "deadzone": 0.12,
+  "anti_deadzone": 0.0,
+  "stick_curve": 1.0,
+  "invert_y": false,
+  "turbo_buttons": [],
+  "turbo_hz": 15.0,
+  "remap": {},
+  "notes": "Preset simples para NES; D-pad recomendado."
+}

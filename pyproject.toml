@@ -12,7 +12,7 @@ license = {text = "MIT"}
 authors = [{name = "MukaSanches"}]
 dependencies = [
   "pygame>=2.5,<3",
-  "vgamepad>=0.1.0",
+  "vgamepad @ git+https://github.com/yannbouteiller/vgamepad.git@3f910aa8bbde49a576683db74ad5e4a0879f8a80",
   "psutil>=5.9"
 ]
 

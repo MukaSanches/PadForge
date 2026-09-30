@@ -1,0 +1,13 @@
+{
+  "name": "Retro / GameCube",
+  "category": "Retro",
+  "executables": ["dolphin.exe"],
+  "deadzone": 0.08,
+  "anti_deadzone": 0.02,
+  "stick_curve": 1.05,
+  "invert_y": false,
+  "turbo_buttons": [],
+  "turbo_hz": 12.0,
+  "remap": {},
+  "notes": "Preset para Dolphin/GameCube."
+}

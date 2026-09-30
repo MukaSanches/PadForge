@@ -169,7 +169,27 @@ class PygameInputBackend:
             state.buttons["dpad_down"] = hy < 0
         return state
 
+    def rumble(self, low_frequency: float, high_frequency: float, duration_ms: int = 60000) -> bool:
+        """Best-effort force-feedback passthrough to the physical controller."""
+        if self.joystick is None or not hasattr(self.joystick, "rumble"):
+            return False
+        try:
+            low = max(0.0, min(1.0, float(low_frequency)))
+            high = max(0.0, min(1.0, float(high_frequency)))
+            if low == 0.0 and high == 0.0:
+                if hasattr(self.joystick, "stop_rumble"):
+                    self.joystick.stop_rumble()
+                return True
+            return bool(self.joystick.rumble(low, high, max(1, int(duration_ms))))
+        except Exception:
+            return False
+
     def close(self):
         if self.joystick is not None:
+            try:
+                if hasattr(self.joystick, "stop_rumble"):
+                    self.joystick.stop_rumble()
+            except Exception:
+                pass
             self.joystick.quit()
         pygame.joystick.quit()

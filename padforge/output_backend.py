@@ -6,6 +6,29 @@ from .processing import turbo_active
 class NullOutput:
     name = "Monitor only"
     available = True
+    def set_rumble_handler(self, handler):
+        self._rumble_handler = handler
+        if not self.available or self._notification_registered:
+            return
+
+        def callback(client, target, large_motor, small_motor, led_number, user_data):
+            if self._rumble_handler is None:
+                return
+            try:
+                low = float(large_motor) / 255.0
+                high = float(small_motor) / 255.0
+                self._rumble_handler(low, high)
+            except Exception:
+                pass
+
+        try:
+            self._pad.register_notification(callback_function=callback)
+            self._notification_callback = callback
+            self._notification_registered = True
+        except Exception:
+            self._notification_callback = None
+            self._notification_registered = False
+
     def send(self, state: ControllerState, profile: Profile):
         return
     def close(self):
@@ -20,6 +43,9 @@ class X360Output:
         self.error = ""
         self._pad = None
         self._vg = None
+        self._rumble_handler = None
+        self._notification_registered = False
+        self._notification_callback = None
         try:
             import vgamepad as vg
             self._vg = vg
@@ -60,6 +86,11 @@ class X360Output:
 
     def close(self):
         if self.available:
+            try:
+                if self._notification_registered:
+                    self._pad.unregister_notification()
+            except Exception:
+                pass
             try:
                 self._pad.reset()
                 self._pad.update()

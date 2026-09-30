@@ -20,6 +20,11 @@ class PadForgeEngine:
         self.status_callback: Optional[Callable[[ControllerState], None]] = None
         self._thread = None
         self._last_exe = ""
+        if hasattr(self.output, "set_rumble_handler") and hasattr(self.input, "rumble"):
+            try:
+                self.output.set_rumble_handler(self.input.rumble)
+            except Exception:
+                pass
 
     def set_profile(self, profile: Profile):
         self.profile = profile

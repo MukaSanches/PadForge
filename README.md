@@ -10,6 +10,7 @@ PadForge is a lightweight Windows gamepad modernization layer designed to make g
 - Live hardware diagnostic view for axes, buttons and hats/D-pad.
 - Editable physical-to-logical mapping for controllers whose button numbering differs by manufacturer.
 - Xbox 360 virtual output through `vgamepad` on Windows.
+- Best-effort force-feedback/rumble passthrough from the virtual Xbox controller to compatible physical controllers.
 - Processing pipeline with radial deadzone, anti-deadzone, response curves and Y inversion.
 - Turbo support in the output layer.
 - JSON game profiles and automatic profile switching based on the foreground executable.

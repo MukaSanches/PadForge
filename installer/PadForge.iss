@@ -4,34 +4,30 @@
 #define MyAppExeName "PadForge.exe"
 
 [Setup]
-AppId={{A9352E72-0EF0-4B83-BBE7-6A7D7CFEF101}
+AppId={{CF8D0123-39A1-4D78-91B7-101D5B12C5E7}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\PadForge
 DefaultGroupName=PadForge
+DisableProgramGroupPage=yes
 OutputDir=..\dist-installer
-OutputBaseFilename=PadForge-Setup-v{#MyAppVersion}
+OutputBaseFilename=PadForge-Setup-1.0.0
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
-ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
-PrivilegesRequired=admin
-UninstallDisplayIcon={app}\{#MyAppExeName}
+PrivilegesRequired=lowest
+ArchitecturesInstallIn64BitMode=x64
 
 [Files]
-Source: "..\dist\PadForge\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\profiles\*"; DestDir: "{app}\profiles"; Flags: ignoreversion
-Source: "..\assets\ViGEmBusSetup_x64.msi"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "..\dist\PadForge.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\PadForge"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\PadForge"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\PadForge"; Filename: "{app}\PadForge.exe"
+Name: "{autodesktop}\PadForge"; Filename: "{app}\PadForge.exe"; Tasks: desktopicon
 
 [Tasks]
-Name: "desktopicon"; Description: "Criar atalho na área de trabalho"; GroupDescription: "Atalhos:"
+Name: "desktopicon"; Description: "Criar atalho na Área de Trabalho"; GroupDescription: "Atalhos:"
 
 [Run]
-Filename: "msiexec.exe"; Parameters: "/i ""{tmp}\ViGEmBusSetup_x64.msi"" /passive /norestart"; StatusMsg: "Instalando suporte a controle Xbox virtual..."; Flags: waituntilterminated
-Filename: "{app}\{#MyAppExeName}"; Description: "Abrir PadForge"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\PadForge.exe"; Description: "Abrir PadForge"; Flags: nowait postinstall skipifsilent

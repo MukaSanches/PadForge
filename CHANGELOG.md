@@ -2,36 +2,36 @@
 
 ## 1.0.0
 
-Initial functional Windows release.
+### Controller engine
+- SDL2/pygame generic USB controller detection.
+- Stable per-controller identity using GUID + device name.
+- Guided physical mapping for face buttons, shoulders, sticks and D-pad.
+- HAT/POV and button-based D-pad support.
+- Analog Doctor center/range/deadzone learning.
+- Hardware mapping/calibration separated from game profiles.
+- Up to four physical controllers and four virtual X360 outputs.
 
-### Input
-- Generic SDL/DirectInput-compatible USB controller discovery.
-- SDL GameControllerDB-assisted automatic mapping.
-- Raw/manual fallback for unknown PS2-to-USB adapters.
-- Live axes, buttons and hat/D-pad diagnostics.
-- Persistent physical-to-logical mapping.
-- Analog Doctor calibration with saved center, range and deadzone.
+### Game modernization
+- Xbox 360 virtual output through an isolated vgamepad backend.
+- Rumble passthrough from virtual XInput feedback to compatible physical controllers.
+- Linear, precision, aggressive, quadratic and S-curve response shaping.
+- Logical remapping and turbo in the processing/profile engine.
+- Automatic foreground-game profile switching and fallback after game exit.
 
-### Processing
-- Radial deadzone.
-- Anti-deadzone.
-- Configurable response curves.
-- Y-axis inversion.
-- Logical remapping.
-- Turbo gating.
-- 250 Hz target processing loop.
+### Profiles
+- Universal, Racing, Football, GTA San Andreas and FPS presets.
+- NES, SNES, Mega Drive, Nintendo 64, PS1, PS2, Dreamcast, GameCube/Wii and Arcade presets.
+- Diagnostic profile without virtual output.
 
-### Output
-- Xbox 360/XInput virtual controller output.
-- Monitor-only fallback when the virtual controller backend is unavailable.
-- Force-feedback/rumble passthrough to compatible physical controllers.
+### UI and distribution
+- Lightweight Tk interface.
+- Guided controller mapping.
+- Analog Doctor telemetry/calibration.
+- Always-on-top overlay.
+- Windows autostart.
+- In-app virtual driver install/repair flow.
+- GitHub Actions test/build pipeline.
+- PyInstaller single-file executable and Inno Setup installer configuration.
 
-### Game intelligence
-- Automatic profile selection from the foreground executable.
-- Built-in profiles for modern games, racing/NFS, football/PES, GTA/third-person, NES, SNES, Mega Drive, N64, GameCube, Dreamcast, Arcade and PlayStation.
-
-### Distribution
-- Native Windows x64 application built with PyInstaller.
-- Inno Setup installer.
-- ViGEmBus driver bundled with the installer.
-- Windows CI tests and reproducible build artifact.
+### Public baseline boundary
+- OS-level keyboard/mouse injection is intentionally disabled in the public V1 baseline; the auxiliary-action adapter is isolated for future opt-in implementations.

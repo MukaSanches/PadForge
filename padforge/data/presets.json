@@ -1,0 +1,27 @@
+{
+  "profiles": [
+    {
+      "id": "universal",
+      "name": "Universal — Xbox 360",
+      "description": "Perfil padrão para controles USB genéricos.",
+      "match_processes": [],
+      "output": "x360",
+      "mapping": {"axis_map":{"LX":0,"LY":1,"RX":2,"RY":3},"button_map":{"SOUTH":0,"EAST":1,"WEST":2,"NORTH":3,"L1":4,"R1":5,"L2":6,"R2":7,"SELECT":8,"START":9,"L3":10,"R3":11},"dpad_hat":0},
+      "calibration":{"LX":{"deadzone":0.0},"LY":{"deadzone":0.0},"RX":{"deadzone":0.0},"RY":{"deadzone":0.0}}
+    },
+    {"id":"racing","name":"Corrida — Precisão","description":"Direção progressiva para jogos de corrida.","match_processes":["speed.exe","nfsmw.exe","carbon.exe","underground2.exe"],"output":"x360","mapping":{"axis_map":{"LX":0,"LY":1,"RX":2,"RY":3},"button_map":{"SOUTH":0,"EAST":1,"WEST":2,"NORTH":3,"L1":4,"R1":5,"L2":6,"R2":7,"SELECT":8,"START":9,"L3":10,"R3":11},"dpad_hat":0},"calibration":{"LX":{"deadzone":0.02,"curve":"precision","sensitivity":0.92},"LY":{"deadzone":0.08},"RX":{"deadzone":0.1},"RY":{"deadzone":0.1}}},
+    {"id":"football","name":"Futebol — PES/FIFA","description":"Resposta circular e rápida para futebol.","match_processes":["pes5.exe","pes6.exe","pes2008.exe","fifa.exe"],"output":"x360","mapping":{"axis_map":{"LX":0,"LY":1,"RX":2,"RY":3},"button_map":{"SOUTH":0,"EAST":1,"WEST":2,"NORTH":3,"L1":4,"R1":5,"L2":6,"R2":7,"SELECT":8,"START":9,"L3":10,"R3":11},"dpad_hat":0},"calibration":{"LX":{"deadzone":0.02,"curve":"s-curve"},"LY":{"deadzone":0.02,"curve":"s-curve"},"RX":{"deadzone":0.08},"RY":{"deadzone":0.08}}},
+    {"id":"gta-sa","name":"GTA San Andreas","description":"Perfil para direção e câmera no GTA SA.","match_processes":["gta_sa.exe"],"output":"x360","mapping":{"axis_map":{"LX":0,"LY":1,"RX":2,"RY":3},"button_map":{"SOUTH":0,"EAST":1,"WEST":2,"NORTH":3,"L1":4,"R1":5,"L2":6,"R2":7,"SELECT":8,"START":9,"L3":10,"R3":11},"dpad_hat":0},"calibration":{"LX":{"deadzone":0.07},"LY":{"deadzone":0.07},"RX":{"deadzone":0.12,"curve":"precision"},"RY":{"deadzone":0.12,"curve":"precision"}}},
+    {"id":"snes","name":"Retro — Super Nintendo","description":"Layout SNES com extras modernos nos botões não usados.","match_processes":["snes9x.exe","bsnes.exe","mesen2.exe"],"output":"x360","extra_bindings":{"L3":"keyboard:f5","R3":"keyboard:f8"},"metadata":{"system":"SNES","L3":"Quick Save (F5)","R3":"Quick Load (F8)"}},
+    {"id":"ps1","name":"Retro — PlayStation 1","description":"Perfil para DuckStation/ePSXe.","match_processes":["duckstation-qt-x64-release.exe","duckstation.exe","epsxe.exe"],"output":"x360"},
+    {"id":"ps2","name":"Retro — PlayStation 2","description":"Perfil para PCSX2.","match_processes":["pcsx2-qt.exe","pcsx2.exe"],"output":"x360"},
+    {"id":"gamecube","name":"Retro — GameCube/Wii","description":"Perfil para Dolphin.","match_processes":["dolphin.exe"],"output":"x360"},
+    {"id":"diagnostic","name":"Diagnóstico — sem saída virtual","description":"Mostra o controle sem criar dispositivo virtual.","match_processes":[],"output":"none"},
+    {"id":"nes","name":"Retro — NES/Famicom","description":"Perfil simples para emuladores NES.","match_processes":["mesen.exe","nestopia.exe","fceux.exe"],"output":"x360","extra_bindings":{"L3":"keyboard:f5","R3":"keyboard:f8"}},
+    {"id":"megadrive","name":"Retro — Mega Drive/Genesis","description":"Perfil para Mega Drive/Genesis.","match_processes":["gens.exe","kega.exe","fusion.exe"],"output":"x360"},
+    {"id":"n64","name":"Retro — Nintendo 64","description":"Perfil para Project64/Mupen64Plus.","match_processes":["project64.exe","mupen64plus.exe"],"output":"x360","calibration":{"LX":{"deadzone":0.08,"curve":"s-curve"},"LY":{"deadzone":0.08,"curve":"s-curve"},"RX":{"deadzone":0.1},"RY":{"deadzone":0.1}}},
+    {"id":"dreamcast","name":"Retro — Dreamcast","description":"Perfil para Flycast/Redream.","match_processes":["flycast.exe","redream.exe"],"output":"x360"},
+    {"id":"arcade","name":"Retro — Arcade/MAME","description":"Perfil para MAME e frontends arcade.","match_processes":["mame.exe","mame64.exe"],"output":"x360","turbo_hz":{"SOUTH":12.0}},
+    {"id":"fps","name":"FPS — Analógico preciso","description":"Curva fina para câmera e mira.","match_processes":[],"output":"x360","calibration":{"LX":{"deadzone":0.08},"LY":{"deadzone":0.08},"RX":{"deadzone":0.05,"curve":"precision","sensitivity":0.85},"RY":{"deadzone":0.05,"curve":"precision","sensitivity":0.85}}}
+  ]
+}

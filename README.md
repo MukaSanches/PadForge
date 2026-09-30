@@ -1,116 +1,142 @@
 # PadForge
 
-**Any Controller. Any Game.**
+> **Any Controller. Any Game.**
 
-PadForge is a lightweight Windows gamepad modernization layer designed to make generic USB controllers useful in modern and retro games. Its first reference device is the common generic PS2-to-USB controller, but the architecture is device-agnostic.
+PadForge is a Windows gamepad modernization layer focused on generic USB/DirectInput controllers, including common PlayStation 2-to-USB adapters.
+
+It learns the real layout and analog behavior of each physical controller, normalizes it into a stable PadForge layout, applies game-specific tuning and can expose the result as a virtual Xbox 360 controller.
 
 ## PadForge 1.0
 
-- Detects generic DirectInput/SDL controllers.
-- Live hardware diagnostic view for axes, buttons and hats/D-pad.
-- Editable physical-to-logical mapping for controllers whose button numbering differs by manufacturer.
-- Xbox 360 virtual output through `vgamepad` on Windows.
-- Best-effort force-feedback/rumble passthrough from the virtual Xbox controller to compatible physical controllers.
-- Processing pipeline with radial deadzone, anti-deadzone, response curves and Y inversion.
-- Turbo support in the output layer.
-- JSON game profiles and automatic profile switching based on the foreground executable.
-- Built-in profiles for modern games, racing/NFS, football/PES, GTA/third-person, NES, SNES, Mega Drive, N64, GameCube, Dreamcast, Arcade and PlayStation emulation.
-- SDL GameControllerDB support in packaged builds plus raw/manual fallback.
-- Analog Doctor with persistent center/range/deadzone calibration.
-- 250 Hz input/output loop target.
-- Dark, lightweight Tkinter interface intended to remain usable on older PCs.
-- GitHub Actions Windows build and Inno Setup installer pipeline.
+- Generic USB gamepad discovery through pygame/SDL2.
+- Stable controller identity from GUID + device name.
+- Guided physical mapping for face buttons, shoulders, sticks and D-pad.
+- D-pad support as SDL HAT/POV or four separate buttons.
+- **Analog Doctor** calibration for center, range, drift and physical deadzone.
+- Physical mapping/calibration stored independently from game profiles.
+- Xbox 360/XInput virtual output through an isolated vgamepad backend.
+- Up to four physical controllers routed to four virtual X360 devices.
+- Best-effort rumble passthrough to SDL devices that expose vibration.
+- Deadzone, sensitivity and response curves: linear, precision, aggressive, quadratic and S-curve.
+- Logical button remapping and turbo support in the processing engine/profile format.
+- Automatic profile switching from the Windows foreground executable, including fallback to the user's manual profile when the game closes.
+- Presets for modern games, racing/NFS, football/PES, GTA SA, FPS, NES, SNES, Mega Drive, N64, PS1, PS2, Dreamcast, GameCube/Wii and Arcade/MAME.
+- Always-on-top live overlay.
+- Windows startup option.
+- Virtual-driver install/repair and probe actions.
+- Windows CI, PyInstaller single-file build and Inno Setup release workflow.
+
+## First run
+
+1. Connect the controller.
+2. Start PadForge.
+3. Select **Configurar controle completo** and follow each requested button/axis.
+4. Run **Analog Doctor — calibrar** and move both sticks through their full range.
+5. If virtual Xbox output is unavailable, select **Instalar / reparar driver virtual**.
+6. Choose a profile or keep **Perfil automático pelo jogo** enabled.
+7. Start the game.
+
+The mapping is saved by stable controller identity, so SDL instance IDs changing after a reboot do not destroy the configuration.
 
 ## Architecture
 
 ```text
-Physical controller
-      |
-      v
-Pygame / SDL2 input
-      |
-      v
-Device Mapping
-      |
-      v
-PadForge Processing Engine
-(deadzone / curve / remap / turbo)
-      |
-      v
-Virtual Output Backend
-      |
-      +--> Xbox 360 / XInput (vgamepad)
-      +--> Monitor-only fallback
-      |
-      v
-Game or Emulator
+Physical USB gamepad
+        |
+        v
+ pygame / SDL2 input
+        |
+        v
+ Per-device mapping + calibration
+        |
+        v
+ Canonical PadForge controller state
+        |
+        v
+ Game profile processing
+ deadzone / curve / sensitivity / remap / turbo
+        |
+        v
+ Replaceable output backend
+        |
+        +--> Xbox 360 virtual controller (vgamepad / ViGEm)
+                    |
+                    +--> rumble request --> compatible physical SDL controller
 ```
 
-The processing engine is intentionally independent from the virtual-controller backend. A future ViGEm replacement can therefore be added without rewriting profiles or controller processing.
+The physical-controller layer and game-profile layer are separate by design. Changing from PES to NFS, an emulator or another game never overwrites the hardware calibration.
 
-## Running from source
+## Built-in profiles
 
-Windows 10/11 is the primary supported platform.
+| Profile | Typical targets |
+| --- | --- |
+| Universal — Xbox 360 | Most Windows games |
+| Corrida — Precisão | NFS Most Wanted/Carbon/Underground 2 |
+| Futebol — PES/FIFA | PES 5/6 and similar football games |
+| GTA San Andreas | GTA SA |
+| FPS — Analógico preciso | XInput FPS/gamepad titles |
+| Retro — NES/Famicom | Mesen, Nestopia, FCEUX |
+| Retro — Super Nintendo | Snes9x, bsnes, Mesen |
+| Retro — Mega Drive/Genesis | Gens/Fusion-style emulators |
+| Retro — Nintendo 64 | Project64/Mupen64Plus |
+| Retro — PlayStation 1 | DuckStation/ePSXe |
+| Retro — PlayStation 2 | PCSX2 |
+| Retro — Dreamcast | Flycast/Redream |
+| Retro — GameCube/Wii | Dolphin |
+| Retro — Arcade/MAME | MAME |
+| Diagnóstico | Input testing without a virtual controller |
+
+## Run from source
 
 ```powershell
-py -m venv .venv
-.venv\Scripts\activate
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python -m padforge
+python main.py
 ```
 
-The official Windows installer bundles the ViGEmBus MSI used by `vgamepad` and installs it before PadForge starts. If virtual output is unavailable for any reason, PadForge still opens in monitor/diagnostic mode.
+## Portable mode
 
-## Generic PS2 USB setup
+Run `PadForge.exe --portable` or create an empty `portable.flag` beside the executable. Configuration will then be stored in `PadForgeData` beside the program instead of `%APPDATA%\PadForge`.
 
-1. Connect the controller.
-2. Open PadForge and select **Atualizar**.
-3. Select the device and choose **Conectar**.
-4. Open **Diagnóstico** and press each physical button to see its raw `bN` index.
-5. Open **Mapeamento** and assign those indices to A/B/X/Y, shoulders, Start and Back.
-6. Save the mapping.
-7. Start a game. When its executable matches a profile, PadForge can switch profile automatically.
+## Build
 
-The default mapping is only a common PS2-USB starting point. Cheap adapters frequently enumerate buttons and axes differently, so the diagnostic/mapping layer is part of the core design rather than a workaround.
+```powershell
+.\scripts\build.ps1
+```
 
-## Profiles
-
-Profiles live in `profiles/*.json`. They can define executable names, deadzone, anti-deadzone, stick curve, Y inversion, turbo and logical remapping.
-
-Examples shipped with v1.0 include:
-
-- Universal / Modern
-- Racing / NFS
-- Football / PES
-- GTA / Third Person
-- Retro / SNES
-- Retro / PlayStation
+The build sets `VGAMEPAD_SKIP_VIGEMBUS_INSTALL=true` so CI does not try to install a kernel driver. Driver setup is a user-initiated action inside PadForge.
 
 ## Tests
 
 ```powershell
-python scripts/verify.py
+python -m unittest discover -s tests -v
+python -m compileall -q padforge main.py
 ```
 
-The tests validate deadzone behavior, calibration math, remapping, Y inversion, turbo gating and automatic executable-to-profile matching.
+The public baseline tests calibration, persistent controller identity, HAT/button D-pad translation, response curves, remapping, trigger conversion, profile merging, automatic game-profile fallback and the virtual-output/rumble callback.
 
-## Building the Windows installer
+Real hardware validation still requires a Windows PC, the actual controller and virtual-driver installation.
 
-The repository includes `.github/workflows/build-windows.yml`. GitHub Actions builds the Windows application with PyInstaller and then generates an installer with Inno Setup. A tag such as `v1.0.0` is configured to publish the generated installer as a release asset.
+## Compatibility
 
-## Integrations and inspirations
+- Windows 10/11: primary virtual-Xbox target.
+- Older Windows versions: SDL input/diagnostics may work, but virtual-driver support is not guaranteed.
 
-PadForge is an original project. Its architecture is informed by mature controller ecosystems including SDL/SDL GameControllerDB, RetroArch's universal-pad approach, PCSX2/DuckStation/Dolphin controller handling, and modern controller remappers. Third-party code is not copied into this repository unless its license and attribution requirements are explicitly handled.
+## Design rules
 
-## Roadmap after 1.0
+1. Physical calibration never belongs to a game profile.
+2. Never assume two generic PS2 adapters expose the same button indexes.
+3. Prefer data-driven game profiles.
+4. Never block the controller polling loop.
+5. Hot-unplug must not crash the app.
+6. Virtual-controller backends must remain replaceable.
+7. Keep the UI light enough for older PCs.
 
-- Guided one-button-at-a-time mapping wizard.
-- Optional HidHide integration to eliminate double-input in problematic games.
-- Additional virtual output backends.
-- Community profile database.
-- Per-game overlay and latency diagnostics.
-- Gyro/motion support where hardware exposes it.
+## Public V1 auxiliary actions
+
+The public V1 baseline deliberately keeps OS-level keyboard/mouse injection disabled. Controller-to-controller remapping, curves, turbo, XInput conversion and rumble remain part of the core. A future auxiliary-action backend can be added behind an explicit opt-in boundary without coupling it to the real-time engine.
 
 ## License
 
-MIT. Third-party dependencies retain their own licenses.
+MIT. See [THIRD_PARTY.md](THIRD_PARTY.md) for runtime dependencies and architectural references.

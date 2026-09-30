@@ -1,0 +1,13 @@
+{
+  "name": "GTA / Third Person",
+  "category": "Action",
+  "executables": ["gta_sa.exe", "gta-vc.exe", "gta3.exe", "gta5.exe"],
+  "deadzone": 0.10,
+  "anti_deadzone": 0.02,
+  "stick_curve": 1.15,
+  "invert_y": false,
+  "turbo_buttons": [],
+  "turbo_hz": 12.0,
+  "remap": {},
+  "notes": "Movimento suave e câmera controlável."
+}

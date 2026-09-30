@@ -28,7 +28,14 @@ class VigemXboxOutput(OutputBackend):
         pad.right_joystick_float(x_value_float=max(-1.0,min(1.0,state.axes.get('RX',0.0))),y_value_float=max(-1.0,min(1.0,state.axes.get('RY',0.0))))
         pad.update()
     def reset(self):
-        if self._pad is not None:self._pad.reset(); self._pad.update()
+        if self._pad is None:return
+        if hasattr(self._pad,'reset'):
+            self._pad.reset(); self._pad.update(); return
+        for enum in self._button_enum.values():self._pad.release_button(button=enum)
+        self._pad.left_trigger_float(value_float=0.0); self._pad.right_trigger_float(value_float=0.0)
+        self._pad.left_joystick_float(x_value_float=0.0,y_value_float=0.0)
+        self._pad.right_joystick_float(x_value_float=0.0,y_value_float=0.0)
+        self._pad.update()
     def close(self):
         try:
             if self._pad is not None and self._notification_registered and hasattr(self._pad,'unregister_notification'):

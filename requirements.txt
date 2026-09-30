@@ -1,5 +1,5 @@
 pygame==2.6.1
-vgamepad==0.1.0
+vgamepad==0.0.1
 psutil==5.9.8
 pystray==0.19.5
 Pillow==10.4.0

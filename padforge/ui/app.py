@@ -10,11 +10,12 @@ from padforge.core.profiles import ProfileStore
 from padforge.runtime import PadForgeRuntime
 from padforge.system.settings import Settings,app_data_dir
 from padforge.system import autostart,virtual_driver
+from padforge.ui.tray import TrayManager
 
 BG='#0b0f14'; PANEL='#121821'; CARD='#18212c'; TEXT='#e8eef5'; MUTED='#91a0b2'; ACCENT='#4aa3ff'; GOOD='#55d187'; WARN='#ffbe55'; BAD='#ff667a'
 
 class PadForgeApp(tk.Tk):
-    def __init__(self,builtin_profiles:str):
+    def __init__(self,builtin_profiles:str,start_hidden:bool=False):
         super().__init__(); self.title(f'PadForge {__version__}'); self.geometry('1040x700'); self.minsize(900,600); self.configure(bg=BG)
         self.settings_data=Settings.load()
         self.store=ProfileStore(builtin_profiles,os.path.join(app_data_dir(),'profiles.json')); self.store.load()
@@ -22,7 +23,16 @@ class PadForgeApp(tk.Tk):
         self.runtime=PadForgeRuntime(self.store,self.controllers,poll_hz=self.settings_data.poll_hz)
         self.runtime.set_profile(self.settings_data.profile_id,manual=True); self.runtime.auto_profile=self.settings_data.auto_profile
         self._device_by_label:Dict[str,int]={}; self._device_key_by_instance:Dict[int,str]={}; self._profile_by_label:Dict[str,str]={}; self._overlay=None
-        self._style(); self._build(); self.protocol('WM_DELETE_WINDOW',self._close); self.runtime.start(); self.after(80,self._refresh)
+        self._quitting=False
+        self._tray=TrayManager(
+            show_callback=lambda:self.after(0,self.show_window),
+            restart_callback=lambda:self.after(0,self._restart),
+            exit_callback=lambda:self.after(0,self._quit),
+        )
+        self._style(); self._build(); self.protocol('WM_DELETE_WINDOW',self.hide_to_tray); self.runtime.start()
+        tray_ok=self._tray.start()
+        if start_hidden and tray_ok:self.after(20,self.hide_to_tray)
+        self.after(80,self._refresh)
 
     def _style(self):
         s=ttk.Style(self)
@@ -94,7 +104,30 @@ class PadForgeApp(tk.Tk):
     def _toggle_start(self):
         if not autostart.set_enabled(bool(self.start.get())): messagebox.showwarning('PadForge','Não foi possível alterar a inicialização automática.')
 
-    def _restart(self): self.runtime.stop(); self.runtime.start()
+    def _restart(self):
+        self.runtime.stop(); self.runtime.start()
+
+    def show_window(self):
+        if self._quitting:return
+        try:
+            self.deiconify(); self.state('normal'); self.lift(); self.focus_force()
+        except Exception:
+            pass
+
+    def hide_to_tray(self):
+        if self._quitting:return
+        try:self.withdraw()
+        except Exception:pass
+
+    def _quit(self):
+        if self._quitting:return
+        self._quitting=True
+        try:self._tray.stop()
+        except Exception:pass
+        try:self.runtime.stop()
+        except Exception:pass
+        try:self.destroy()
+        except Exception:pass
 
     def _probe(self):
         ok,msg=virtual_driver.virtual_output_probe(); (messagebox.showinfo if ok else messagebox.showwarning)('PadForge',msg)
@@ -185,7 +218,7 @@ class PadForgeApp(tk.Tk):
         self.live.config(text=f'{self.runtime.status.device_name} | LT {st.axes.get("LT",0):.2f} RT {st.axes.get("RT",0):.2f} | ID {self.runtime.status.controller_key[:8] or "—"}')
 
     def _refresh(self):
-        if not self.winfo_exists():return
+        if self._quitting or not self.winfo_exists():return
         devices=self.runtime.devices(); labels=[]; self._device_by_label.clear(); self._device_key_by_instance.clear(); desired=None
         for d in devices:
             key=controller_key(d.guid,d.name); label=f'{d.name} • {d.axes} eixos / {d.buttons} botões'; labels.append(label); self._device_by_label[label]=d.instance_id; self._device_key_by_instance[d.instance_id]=key
@@ -205,4 +238,4 @@ class PadForgeApp(tk.Tk):
             st=self.runtime.latest_state(); pressed=[k for k,v in st.buttons.items() if v]; self._overlay_label.config(text=f'PADFORGE • {s.profile_name}\n{s.device_name}\nLX {st.axes["LX"]:+.2f} LY {st.axes["LY"]:+.2f} RX {st.axes["RX"]:+.2f} RY {st.axes["RY"]:+.2f}\n{", ".join(pressed) or "nenhum botão"}')
         self.after(50,self._refresh)
 
-    def _close(self): self.runtime.stop(); self.destroy()
+    def _close(self): self.hide_to_tray()

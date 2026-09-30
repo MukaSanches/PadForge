@@ -19,7 +19,7 @@ jobs:
         run: ./scripts/build.ps1
       - name: Install Inno Setup
         shell: pwsh
-        run: choco install innosetup -y
+        run: choco install innosetup -y --no-progress
       - name: Build installer
         shell: pwsh
         run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\PadForge.iss'
@@ -28,4 +28,4 @@ jobs:
           generate_release_notes: true
           files: |
             dist/PadForge.exe
-            dist-installer/PadForge-Setup-1.0.0.exe
+            dist-installer/PadForge-Setup-1.0.1.exe

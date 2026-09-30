@@ -58,7 +58,7 @@ pip install -r requirements.txt
 python -m padforge
 ```
 
-`vgamepad` installs/uses the required virtual gamepad driver on Windows. If virtual output is unavailable, PadForge still opens in monitor/diagnostic mode.
+The official Windows installer bundles the ViGEmBus MSI used by `vgamepad` and installs it before PadForge starts. If virtual output is unavailable for any reason, PadForge still opens in monitor/diagnostic mode.
 
 ## Generic PS2 USB setup
 

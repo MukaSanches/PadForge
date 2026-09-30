@@ -11,9 +11,12 @@ def resource_path(relative: str) -> str:
 
 def main() -> int:
     from padforge.ui.app import PadForgeApp
-    app = PadForgeApp(resource_path(os.path.join("padforge", "data", "presets.json")))
-    if "--minimized" in sys.argv:
-        app.iconify()
+
+    start_hidden = "--minimized" in sys.argv or "--tray" in sys.argv
+    app = PadForgeApp(
+        resource_path(os.path.join("padforge", "data", "presets.json")),
+        start_hidden=start_hidden,
+    )
     app.mainloop()
     return 0
 
